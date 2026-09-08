@@ -1,6 +1,6 @@
 # `@dappermountain/agent-payload`
 
-Payload CMS **agent rules**, **`payload-host` overlay skill**, and helpers to vendor [payloadcms/skills](https://github.com/payloadcms/skills). Optional peer: [`@dappermountain/agent-practices`](https://www.npmjs.com/package/@dappermountain/agent-practices).
+Payload CMS **agent rules**, **`payload-overlay` overlay skill**, and helpers to vendor [payloadcms/skills](https://github.com/payloadcms/skills). Optional peer: [`@dappermountain/agent-practices`](https://www.npmjs.com/package/@dappermountain/agent-practices).
 
 ## Install
 
@@ -38,7 +38,7 @@ Use `-a cursor` (or an explicit agent list). Passing `-a '*'` is often glob-expa
 | --- | --- | --- |
 | `security-critical.mdc` | `.agents/rules/` | Local API / hooks / transactions |
 | `i18n.mdc` | `.agents/rules/` | Payload i18n vs localization only |
-| `skills/payload-host/` | `.agents/skills/payload-host/` | Host overlay |
+| `skills/payload-overlay/` | `.agents/skills/payload-overlay/` | Host overlay |
 | `database-postgres.md` | under overlay `references/` | Only if `@payloadcms/db-postgres` is a dependency, or `--postgres` |
 
 Also ensures:

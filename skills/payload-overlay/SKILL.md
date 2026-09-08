@@ -1,5 +1,5 @@
 ---
-name: payload-host
+name: payload-overlay
 description: >-
   Host-app overlay for Payload CMS projects. Use with the vendored payload
   skill. Covers config path, Bun vs upstream pnpm docs, host-owned
@@ -15,7 +15,7 @@ Upstream Payload skill docs often assume `pnpm`, a default `src/payload.config.t
 
 ## Reading order
 
-1. This skill (`payload-host`) — and any product-specific overlay the host maintains on top.
+1. This skill (`payload-overlay`) — and any product-specific overlay the host maintains on top.
 2. Vendored [payload/SKILL.md](../payload/SKILL.md).
 3. Synced rules under `.agents/rules/` (`security-critical`, Payload `i18n`, plus practices from `@dappermountain/agent-practices` when present).
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * Sync Payload agent rules + payload-host overlay into the consumer.
+ * Sync Payload agent rules + payload-overlay overlay into the consumer.
  * Optionally runs @dappermountain/agent-practices sync first when available.
  *
  * Usage:
@@ -24,7 +24,7 @@ import { fileURLToPath } from 'node:url'
 import { spawnSync } from 'node:child_process'
 
 const RULES = ['security-critical.mdc', 'i18n.mdc'] as const
-const OVERLAY_NAME = 'payload-host'
+const OVERLAY_NAME = 'payload-overlay'
 const POSTGRES_REF = 'database-postgres.md'
 
 function packageRoot(): string {
