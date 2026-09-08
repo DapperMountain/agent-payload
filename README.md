@@ -60,4 +60,4 @@ MIT
 
 ### `skills:install` agent flag
 
-Use `-a cursor` in scripts. Passing `-a cursor` is often glob-expanded by the shell/Bun before the skills CLI sees it. For multiple agents, list them explicitly (e.g. `-a cursor -a claude-code`) rather than `*`.
+Use `-a cursor` in scripts. Passing `-a '*'` is often glob-expanded by the shell/Bun before the skills CLI sees it. For multiple agents, list them explicitly (e.g. `-a cursor -a claude-code`) rather than `*`.
