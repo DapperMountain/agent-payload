@@ -16,12 +16,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Do NOT set registry-url — it writes a placeholder NODE_AUTH_TOKEN that
+      # blocks npm Trusted Publishing (OIDC). See actions/setup-node#1551.
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          registry-url: 'https://registry.npmjs.org'
-          scope: '@dappermountain'
+          node-version: '24'
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -29,5 +29,4 @@ jobs:
           generate_release_notes: true
 
       - name: Publish to npm
-        # Auth via npm Trusted Publishing (OIDC). Configure Trusted Publisher on npmjs.com.
         run: npm publish --access public
