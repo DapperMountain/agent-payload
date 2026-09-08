@@ -27,7 +27,6 @@ Product-specific skills (multi-tenant product models, branded i18n packages, har
 | Config entry, typed env, generated types | [reference/CONFIG.md](reference/CONFIG.md) |
 | Collections, access, hooks, barrels | [reference/LAYOUT.md](reference/LAYOUT.md) |
 | Host-owned migrations/seed; plugins | [reference/HOST.md](reference/HOST.md) |
-| PostgreSQL adapter notes (opt-in sync) | [reference/database-postgres.md](reference/database-postgres.md) |
 
 ## Package manager
 

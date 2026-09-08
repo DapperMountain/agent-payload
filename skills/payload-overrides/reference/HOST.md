@@ -17,6 +17,4 @@
 
 ## Adapter policy
 
-This overrides skill is **database-agnostic**. Do not ban Mongo or require Postgres here. Product hosts may document a stricter policy in their own skill.
-
-Optional Postgres adapter notes: [database-postgres.md](database-postgres.md) (copied by sync when `@payloadcms/db-postgres` is present or `--postgres` is passed).
+This overrides skill is **database-agnostic**. Do not ban Mongo or require Postgres here. Product hosts may document a stricter adapter policy in their own skill.

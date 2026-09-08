@@ -39,7 +39,6 @@ Use `-a cursor` for `skills:install` (shells often expand `*`).
 | `security-critical.mdc` | `.agents/rules/` | Local API / hooks / transactions |
 | `i18n.mdc` | `.agents/rules/` | Payload i18n vs localization only |
 | `skills/payload-overrides/` | `.agents/skills/payload-overrides/` | Host overrides for the vendored payload skill |
-| `reference/database-postgres.md` | under overrides | Only if `@payloadcms/db-postgres` or `--postgres` |
 
 Also ensures `.cursor/rules` → `.agents/rules` and `.cursor/skills` → `.agents/skills`, and removes legacy `payload-overlay` / `payload-host` skill folders.
 
@@ -50,12 +49,11 @@ Also ensures `.cursor/rules` → `.agents/rules` and `.cursor/skills` → `.agen
 | `CONFIG.md` | Config path, typed env, `src/types.ts` (not `payload-types.ts`) |
 | `LAYOUT.md` | Folder-per-collection, co-located access/hooks, barrels |
 | `HOST.md` | Host-owned migrations/seed; plugins stay product-agnostic |
-| `database-postgres.md` | Opt-in Postgres adapter notes |
 
 ## CLI
 
 ```text
-agent-payload sync [cwd] [--postgres] [--no-postgres] [--skip-practices] [--skip-overrides]
+agent-payload sync [cwd] [--skip-practices] [--skip-overrides]
 ```
 
 ## License

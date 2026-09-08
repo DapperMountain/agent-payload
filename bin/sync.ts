@@ -5,7 +5,7 @@
  *
  * Usage:
  *   bunx @dappermountain/agent-payload sync [cwd]
- *   bun ./bin/sync.ts [--postgres] [--no-postgres] [--skip-practices] [--skip-overrides] [cwd]
+ *   bun ./bin/sync.ts [--skip-practices] [--skip-overrides] [cwd]
  */
 
 import {
@@ -14,7 +14,6 @@ import {
   existsSync,
   lstatSync,
   mkdirSync,
-  readFileSync,
   rmSync,
   symlinkSync,
   unlinkSync,
@@ -26,7 +25,6 @@ import { spawnSync } from 'node:child_process'
 
 const RULES = ['security-critical.mdc', 'i18n.mdc'] as const
 const OVERRIDES_NAME = 'payload-overrides'
-const POSTGRES_REF = 'database-postgres.md'
 const LEGACY_OVERLAY_NAMES = ['payload-overlay', 'payload-host'] as const
 
 function packageRoot(): string {
@@ -35,24 +33,14 @@ function packageRoot(): string {
 
 function parseArgs(argv: string[]): {
   cwd: string
-  forcePostgres: boolean | null
   skipPractices: boolean
   skipOverrides: boolean
 } {
-  let forcePostgres: boolean | null = null
   let skipPractices = false
   let skipOverrides = false
   const positional: string[] = []
   for (const arg of argv) {
     if (arg === 'sync') continue
-    if (arg === '--postgres') {
-      forcePostgres = true
-      continue
-    }
-    if (arg === '--no-postgres') {
-      forcePostgres = false
-      continue
-    }
     if (arg === '--skip-practices') {
       skipPractices = true
       continue
@@ -69,33 +57,9 @@ function parseArgs(argv: string[]): {
   }
   return {
     cwd: resolve(positional[0] ?? process.cwd()),
-    forcePostgres,
     skipPractices,
     skipOverrides,
   }
-}
-
-function readPkg(cwd: string): Record<string, unknown> | null {
-  const pkgPath = join(cwd, 'package.json')
-  if (!existsSync(pkgPath)) return null
-  try {
-    return JSON.parse(readFileSync(pkgPath, 'utf8')) as Record<string, unknown>
-  } catch {
-    return null
-  }
-}
-
-function depMap(pkg: Record<string, unknown> | null): Record<string, string> {
-  if (!pkg) return {}
-  return {
-    ...((pkg.dependencies as Record<string, string>) ?? {}),
-    ...((pkg.devDependencies as Record<string, string>) ?? {}),
-    ...((pkg.peerDependencies as Record<string, string>) ?? {}),
-  }
-}
-
-function detectPostgres(cwd: string): boolean {
-  return Boolean(depMap(readPkg(cwd))['@payloadcms/db-postgres'])
 }
 
 function ensureDir(path: string): void {
@@ -165,24 +129,17 @@ function removeDirIfPresent(path: string, reason: string): void {
   }
 }
 
-function copyOverrides(srcDir: string, destDir: string, includePostgres: boolean): void {
+function copyOverrides(srcDir: string, destDir: string): void {
   ensureDir(dirname(destDir))
   if (existsSync(destDir)) {
     rmSync(destDir, { recursive: true, force: true })
   }
   cpSync(srcDir, destDir, { recursive: true })
-  const pgDest = join(destDir, 'reference', POSTGRES_REF)
-  if (!includePostgres && existsSync(pgDest)) {
-    unlinkSync(pgDest)
-    console.log(`omitted ${POSTGRES_REF} (no postgres adapter)`)
-  } else if (includePostgres) {
-    console.log(`included ${POSTGRES_REF}`)
-  }
   console.log(`copied overrides → ${destDir}`)
 }
 
 function main(): void {
-  const { cwd, forcePostgres, skipPractices, skipOverrides } = parseArgs(process.argv.slice(2))
+  const { cwd, skipPractices, skipOverrides } = parseArgs(process.argv.slice(2))
   const root = packageRoot()
 
   if (!skipPractices) {
@@ -207,8 +164,7 @@ function main(): void {
   if (skipOverrides) {
     removeDirIfPresent(overridesDest, '--skip-overrides')
   } else {
-    const wantPostgres = forcePostgres ?? detectPostgres(cwd)
-    copyOverrides(join(root, 'skills', OVERRIDES_NAME), overridesDest, wantPostgres)
+    copyOverrides(join(root, 'skills', OVERRIDES_NAME), overridesDest)
   }
 
   ensureSymlink(join(cwd, '.cursor', 'rules'), '../.agents/rules')
