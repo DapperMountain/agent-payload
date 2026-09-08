@@ -11,12 +11,12 @@ description: >-
 
 Read this skill **before** the vendored [payload skill](../payload/SKILL.md) when they disagree. Upstream examples often assume `pnpm`, `src/payload.config.ts`, flat `collections/Posts.ts`, and `payload-types.ts`.
 
-Product-specific overlays (multi-tenant product models, branded i18n packages, hard DB policy) belong in the **host app** skill — not here.
+Product-specific skills (multi-tenant product models, branded i18n packages, hard DB policy) belong in the **host app** skill — not here. When both exist, the host product skill wins over this package for product facts; this package wins over the vendored Payload skill for shared host conventions.
 
 ## Reading order
 
-1. This skill (`payload-overrides`) — pick a reference below.
-2. Host product skill (if any), e.g. under `apps/<app>/.agents/skills/`.
+1. Host product skill (if any), e.g. under `apps/<app>/.agents/skills/`.
+2. This skill (`payload-overrides`) — pick a reference below.
 3. Vendored [payload/SKILL.md](../payload/SKILL.md).
 4. Synced rules: `security-critical`, Payload `i18n`, plus `@dappermountain/agent-practices` when present.
 

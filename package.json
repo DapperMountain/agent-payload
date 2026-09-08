@@ -1,6 +1,6 @@
 {
   "name": "@dappermountain/agent-payload",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Payload CMS agent rules, payload-overrides skill, and skills:* helpers. Sync copies into .agents/ for Cursor.",
   "license": "MIT",
   "type": "module",
