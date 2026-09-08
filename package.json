@@ -41,7 +41,7 @@
     "skills:check": "bunx skills check -p"
   },
   "peerDependencies": {
-    "@dappermountain/agent-practices": "*"
+    "@dappermountain/agent-practices": "^0.1.0"
   },
   "peerDependenciesMeta": {
     "@dappermountain/agent-practices": {

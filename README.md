@@ -1,26 +1,27 @@
 # `@dappermountain/agent-payload`
 
-Payload CMS **agent rules**, **`payload-host` overlay skill**, and helpers to vendor [payloadcms/skills](https://github.com/payloadcms/skills). Pairs with [`@dappermountain/agent-practices`](https://github.com/DapperMountain/agent-practices) (optional peer).
+Payload CMS **agent rules**, **`payload-host` overlay skill**, and helpers to vendor [payloadcms/skills](https://github.com/payloadcms/skills). Optional peer: [`@dappermountain/agent-practices`](https://www.npmjs.com/package/@dappermountain/agent-practices).
 
-## Install (GitHub first)
-
-```bash
-bun add -d github:DapperMountain/agent-practices github:DapperMountain/agent-payload
-```
-
-Then:
+## Install
 
 ```bash
-bun run agents:sync    # practices + payload rules/overlay + Cursor symlinks
-bun run skills:install # vendor payloadcms/skills into .agents/skills/payload
+npm install -D @dappermountain/agent-practices @dappermountain/agent-payload
+# or: bun add -d @dappermountain/agent-practices @dappermountain/agent-payload
 ```
 
-Recommended consumer scripts:
+Installing the packages does **not** activate rules or skills in Cursor. Sync (and optionally vendor the upstream Payload skill):
+
+```bash
+npx @dappermountain/agent-payload sync
+npx skills add payloadcms/skills --skill payload -y --copy -a cursor
+```
+
+Recommended `package.json` scripts:
 
 ```json
 {
   "scripts": {
-    "agents:sync": "bunx @dappermountain/agent-payload sync",
+    "agents:sync": "agent-payload sync",
     "skills:install": "bunx skills add payloadcms/skills --skill payload -y --copy -a cursor",
     "skills:update": "bunx skills update payload -y -p",
     "skills:check": "bunx skills check -p"
@@ -28,7 +29,9 @@ Recommended consumer scripts:
 }
 ```
 
-`agent-payload sync` runs **practices sync first** when `@dappermountain/agent-practices` is installed (pass `--skip-practices` to skip).
+`agent-payload sync` runs **practices sync first** when `@dappermountain/agent-practices` is installed (`--skip-practices` to skip).
+
+Use `-a cursor` (or an explicit agent list). Passing `-a '*'` is often glob-expanded by the shell before the skills CLI sees it.
 
 ## What sync copies
 
@@ -46,18 +49,16 @@ Also ensures:
 .cursor/skills -> ../.agents/skills
 ```
 
-## Prefer sync over postinstall
-
-Bun blocks untrusted lifecycle scripts for GitHub deps. Run `agents:sync` and `skills:install` explicitly after install / upgrade.
-
 ## Database policy
 
-Shared overlay is **adapter-agnostic**. Hard Postgres-only policy belongs in a product overlay (e.g. a host’s `grim-payload-app`), not here.
+Shared overlay is **adapter-agnostic**. Stricter database policy belongs in a host product overlay skill, not in this package.
+
+## CLI
+
+```text
+agent-payload sync [cwd] [--postgres] [--no-postgres] [--skip-practices]
+```
 
 ## License
 
 MIT
-
-### `skills:install` agent flag
-
-Use `-a cursor` in scripts. Passing `-a '*'` is often glob-expanded by the shell/Bun before the skills CLI sees it. For multiple agents, list them explicitly (e.g. `-a cursor -a claude-code`) rather than `*`.
