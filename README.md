@@ -1,6 +1,6 @@
 # `@dappermountain/agent-payload`
 
-Payload CMS **agent rules**, **`payload-overlay` overlay skill**, and helpers to vendor [payloadcms/skills](https://github.com/payloadcms/skills). Optional peer: [`@dappermountain/agent-practices`](https://www.npmjs.com/package/@dappermountain/agent-practices).
+Payload CMS **agent rules**, **`payload-overrides` skill** (host conventions that override the vendored Payload skill), and helpers to vendor [payloadcms/skills](https://github.com/payloadcms/skills). Optional peer: [`@dappermountain/agent-practices`](https://www.npmjs.com/package/@dappermountain/agent-practices).
 
 ## Install
 
@@ -28,9 +28,9 @@ Recommended `package.json` scripts:
 }
 ```
 
-`agent-payload sync` runs **practices sync first** when `@dappermountain/agent-practices` is installed (`--skip-practices` to skip).
+`agent-payload sync` runs **practices sync first** when `@dappermountain/agent-practices` is installed (`--skip-practices` to skip). Pass `--skip-overrides` when the consumer does not want the shared overrides skill (e.g. only a product skill under `apps/<app>/.agents/skills/`).
 
-Use `-a cursor` (or an explicit agent list). Passing `-a '*'` is often glob-expanded by the shell before the skills CLI sees it.
+Use `-a cursor` for `skills:install` (shells often expand `*`).
 
 ## What sync copies
 
@@ -38,24 +38,24 @@ Use `-a cursor` (or an explicit agent list). Passing `-a '*'` is often glob-expa
 | --- | --- | --- |
 | `security-critical.mdc` | `.agents/rules/` | Local API / hooks / transactions |
 | `i18n.mdc` | `.agents/rules/` | Payload i18n vs localization only |
-| `skills/payload-overlay/` | `.agents/skills/payload-overlay/` | Host overlay |
-| `database-postgres.md` | under overlay `references/` | Only if `@payloadcms/db-postgres` is a dependency, or `--postgres` |
+| `skills/payload-overrides/` | `.agents/skills/payload-overrides/` | Host overrides for the vendored payload skill |
+| `reference/database-postgres.md` | under overrides | Only if `@payloadcms/db-postgres` or `--postgres` |
 
-Also ensures:
+Also ensures `.cursor/rules` → `.agents/rules` and `.cursor/skills` → `.agents/skills`, and removes legacy `payload-overlay` / `payload-host` skill folders.
 
-```text
-.cursor/rules  -> ../.agents/rules
-.cursor/skills -> ../.agents/skills
-```
+## `payload-overrides` contents
 
-## Database policy
-
-Shared overlay is **adapter-agnostic**. Stricter database policy belongs in a host product overlay skill, not in this package.
+| Reference | Covers |
+| --- | --- |
+| `CONFIG.md` | Config path, typed env, `src/types.ts` (not `payload-types.ts`) |
+| `LAYOUT.md` | Folder-per-collection, co-located access/hooks, barrels |
+| `HOST.md` | Host-owned migrations/seed; plugins stay product-agnostic |
+| `database-postgres.md` | Opt-in Postgres adapter notes |
 
 ## CLI
 
 ```text
-agent-payload sync [cwd] [--postgres] [--no-postgres] [--skip-practices]
+agent-payload sync [cwd] [--postgres] [--no-postgres] [--skip-practices] [--skip-overrides]
 ```
 
 ## License

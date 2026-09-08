@@ -1,11 +1,11 @@
 #!/usr/bin/env bun
 /**
- * Sync Payload agent rules + payload-overlay overlay into the consumer.
- * Optionally runs @dappermountain/agent-practices sync first when available.
+ * Sync Payload agent rules + payload-overrides skill into the consumer.
+ * Runs @dappermountain/agent-practices sync first when available.
  *
  * Usage:
  *   bunx @dappermountain/agent-payload sync [cwd]
- *   bun ./bin/sync.ts [--postgres] [--no-postgres] [--skip-practices] [cwd]
+ *   bun ./bin/sync.ts [--postgres] [--no-postgres] [--skip-practices] [--skip-overrides] [cwd]
  */
 
 import {
@@ -19,13 +19,15 @@ import {
   symlinkSync,
   unlinkSync,
 } from 'node:fs'
+import { createRequire } from 'node:module'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { spawnSync } from 'node:child_process'
 
 const RULES = ['security-critical.mdc', 'i18n.mdc'] as const
-const OVERLAY_NAME = 'payload-overlay'
+const OVERRIDES_NAME = 'payload-overrides'
 const POSTGRES_REF = 'database-postgres.md'
+const LEGACY_OVERLAY_NAMES = ['payload-overlay', 'payload-host'] as const
 
 function packageRoot(): string {
   return resolve(dirname(fileURLToPath(import.meta.url)), '..')
@@ -35,9 +37,11 @@ function parseArgs(argv: string[]): {
   cwd: string
   forcePostgres: boolean | null
   skipPractices: boolean
+  skipOverrides: boolean
 } {
   let forcePostgres: boolean | null = null
   let skipPractices = false
+  let skipOverrides = false
   const positional: string[] = []
   for (const arg of argv) {
     if (arg === 'sync') continue
@@ -53,13 +57,22 @@ function parseArgs(argv: string[]): {
       skipPractices = true
       continue
     }
+    if (arg === '--skip-overrides' || arg === '--skip-overlay') {
+      skipOverrides = true
+      continue
+    }
     if (arg.startsWith('-')) {
       console.error(`Unknown flag: ${arg}`)
       process.exit(1)
     }
     positional.push(arg)
   }
-  return { cwd: resolve(positional[0] ?? process.cwd()), forcePostgres, skipPractices }
+  return {
+    cwd: resolve(positional[0] ?? process.cwd()),
+    forcePostgres,
+    skipPractices,
+    skipOverrides,
+  }
 }
 
 function readPkg(cwd: string): Record<string, unknown> | null {
@@ -82,8 +95,7 @@ function depMap(pkg: Record<string, unknown> | null): Record<string, string> {
 }
 
 function detectPostgres(cwd: string): boolean {
-  const deps = depMap(readPkg(cwd))
-  return Boolean(deps['@payloadcms/db-postgres'])
+  return Boolean(depMap(readPkg(cwd))['@payloadcms/db-postgres'])
 }
 
 function ensureDir(path: string): void {
@@ -110,12 +122,24 @@ function ensureSymlink(linkPath: string, target: string): void {
 }
 
 function findPracticesSync(cwd: string): string | null {
-  const candidates = [
-    join(cwd, 'node_modules', '@dappermountain', 'agent-practices', 'bin', 'sync.ts'),
-    join(packageRoot(), '..', 'agent-practices', 'bin', 'sync.ts'),
-  ]
-  for (const c of candidates) {
-    if (existsSync(c)) return c
+  const require = createRequire(join(cwd, 'package.json'))
+  try {
+    const pkgJson = require.resolve('@dappermountain/agent-practices/package.json')
+    for (const name of ['sync.js', 'sync.ts']) {
+      const candidate = join(dirname(pkgJson), 'bin', name)
+      if (existsSync(candidate)) return candidate
+    }
+  } catch {
+    // not installed
+  }
+  for (const name of ['sync.js', 'sync.ts']) {
+    const fallbacks = [
+      join(cwd, 'node_modules', '@dappermountain', 'agent-practices', 'bin', name),
+      join(packageRoot(), '..', 'agent-practices', 'bin', name),
+    ]
+    for (const c of fallbacks) {
+      if (existsSync(c)) return c
+    }
   }
   return null
 }
@@ -123,10 +147,10 @@ function findPracticesSync(cwd: string): string | null {
 function runPracticesSync(cwd: string): void {
   const script = findPracticesSync(cwd)
   if (!script) {
-    console.log('skip practices sync (package not found)')
+    console.log('skip practices sync (@dappermountain/agent-practices not found)')
     return
   }
-  console.log(`running agent-practices sync…`)
+  console.log('running agent-practices sync…')
   const result = spawnSync(process.execPath, [script, cwd], { stdio: 'inherit' })
   if (result.status !== 0) {
     console.error('agent-practices sync failed')
@@ -134,24 +158,31 @@ function runPracticesSync(cwd: string): void {
   }
 }
 
-function copyOverlay(srcDir: string, destDir: string, includePostgres: boolean): void {
+function removeDirIfPresent(path: string, reason: string): void {
+  if (existsSync(path)) {
+    rmSync(path, { recursive: true, force: true })
+    console.log(`removed ${path} (${reason})`)
+  }
+}
+
+function copyOverrides(srcDir: string, destDir: string, includePostgres: boolean): void {
   ensureDir(dirname(destDir))
   if (existsSync(destDir)) {
     rmSync(destDir, { recursive: true, force: true })
   }
   cpSync(srcDir, destDir, { recursive: true })
-  const pgDest = join(destDir, 'references', POSTGRES_REF)
+  const pgDest = join(destDir, 'reference', POSTGRES_REF)
   if (!includePostgres && existsSync(pgDest)) {
     unlinkSync(pgDest)
     console.log(`omitted ${POSTGRES_REF} (no postgres adapter)`)
   } else if (includePostgres) {
     console.log(`included ${POSTGRES_REF}`)
   }
-  console.log(`copied overlay → ${destDir}`)
+  console.log(`copied overrides → ${destDir}`)
 }
 
 function main(): void {
-  const { cwd, forcePostgres, skipPractices } = parseArgs(process.argv.slice(2))
+  const { cwd, forcePostgres, skipPractices, skipOverrides } = parseArgs(process.argv.slice(2))
   const root = packageRoot()
 
   if (!skipPractices) {
@@ -167,12 +198,18 @@ function main(): void {
     console.log(`copied ${dest}`)
   }
 
-  const wantPostgres = forcePostgres ?? detectPostgres(cwd)
-  copyOverlay(
-    join(root, 'skills', OVERLAY_NAME),
-    join(cwd, '.agents', 'skills', OVERLAY_NAME),
-    wantPostgres,
-  )
+  // Drop legacy skill folder names from prior package versions
+  for (const legacy of LEGACY_OVERLAY_NAMES) {
+    removeDirIfPresent(join(cwd, '.agents', 'skills', legacy), `legacy ${legacy}`)
+  }
+
+  const overridesDest = join(cwd, '.agents', 'skills', OVERRIDES_NAME)
+  if (skipOverrides) {
+    removeDirIfPresent(overridesDest, '--skip-overrides')
+  } else {
+    const wantPostgres = forcePostgres ?? detectPostgres(cwd)
+    copyOverrides(join(root, 'skills', OVERRIDES_NAME), overridesDest, wantPostgres)
+  }
 
   ensureSymlink(join(cwd, '.cursor', 'rules'), '../.agents/rules')
   ensureSymlink(join(cwd, '.cursor', 'skills'), '../.agents/skills')
