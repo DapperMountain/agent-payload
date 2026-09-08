@@ -21,7 +21,7 @@ Recommended consumer scripts:
 {
   "scripts": {
     "agents:sync": "bunx @dappermountain/agent-payload sync",
-    "skills:install": "bunx skills add payloadcms/skills --skill payload -y --copy -a '*'",
+    "skills:install": "bunx skills add payloadcms/skills --skill payload -y --copy -a cursor",
     "skills:update": "bunx skills update payload -y -p",
     "skills:check": "bunx skills check -p"
   }
@@ -57,3 +57,7 @@ Shared overlay is **adapter-agnostic**. Hard Postgres-only policy belongs in a p
 ## License
 
 MIT
+
+### `skills:install` agent flag
+
+Use `-a cursor` in scripts. Passing `-a cursor` is often glob-expanded by the shell/Bun before the skills CLI sees it. For multiple agents, list them explicitly (e.g. `-a cursor -a claude-code`) rather than `*`.

@@ -36,7 +36,7 @@
   },
   "scripts": {
     "sync": "bun ./bin/sync.ts",
-    "skills:install": "bunx skills add payloadcms/skills --skill payload -y --copy -a '*'",
+    "skills:install": "bunx skills add payloadcms/skills --skill payload -y --copy -a cursor",
     "skills:update": "bunx skills update payload -y -p",
     "skills:check": "bunx skills check -p"
   },
