@@ -1,0 +1,54 @@
+{
+  "name": "@dappermountain/agent-payload",
+  "version": "0.1.0",
+  "description": "Payload CMS agent rules, payload-host overlay skill, and skills:* helpers. Sync copies into .agents/ for Cursor.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "agent-payload": "./bin/sync.ts"
+  },
+  "files": [
+    "bin",
+    "rules",
+    "skills",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DapperMountain/agent-payload.git"
+  },
+  "bugs": {
+    "url": "https://github.com/DapperMountain/agent-payload/issues"
+  },
+  "homepage": "https://github.com/DapperMountain/agent-payload#readme",
+  "author": "Dapper Mountain",
+  "keywords": [
+    "agents",
+    "cursor",
+    "payload",
+    "payloadcms",
+    "skills"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "scripts": {
+    "sync": "bun ./bin/sync.ts",
+    "skills:install": "bunx skills add payloadcms/skills --skill payload -y --copy -a '*'",
+    "skills:update": "bunx skills update payload -y -p",
+    "skills:check": "bunx skills check -p"
+  },
+  "peerDependencies": {
+    "@dappermountain/agent-practices": "*"
+  },
+  "peerDependenciesMeta": {
+    "@dappermountain/agent-practices": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
