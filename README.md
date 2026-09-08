@@ -5,15 +5,14 @@ Payload CMS **agent rules**, **`payload-host` overlay skill**, and helpers to ve
 ## Install
 
 ```bash
-npm install -D @dappermountain/agent-practices @dappermountain/agent-payload
-# or: bun add -d @dappermountain/agent-practices @dappermountain/agent-payload
+bun add -d @dappermountain/agent-practices @dappermountain/agent-payload
 ```
 
 Installing the packages does **not** activate rules or skills in Cursor. Sync (and optionally vendor the upstream Payload skill):
 
 ```bash
-npx @dappermountain/agent-payload sync
-npx skills add payloadcms/skills --skill payload -y --copy -a cursor
+bunx @dappermountain/agent-payload sync
+bunx skills add payloadcms/skills --skill payload -y --copy -a cursor
 ```
 
 Recommended `package.json` scripts:
