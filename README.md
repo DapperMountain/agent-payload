@@ -46,7 +46,7 @@ Also ensures `.cursor/rules` → `.agents/rules` and `.cursor/skills` → `.agen
 
 | Reference | Covers |
 | --- | --- |
-| `CONFIG.md` | Config path, typed env, `src/types.ts` (not `payload-types.ts`) |
+| `CONFIG.md` | Config path, typed env, `src/types.ts` |
 | `LAYOUT.md` | Folder-per-collection, co-located access/hooks, barrels |
 | `HOST.md` | Host-owned migrations/seed; plugins stay product-agnostic |
 

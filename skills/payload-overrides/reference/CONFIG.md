@@ -20,11 +20,11 @@ Prefer a **validated config module** (e.g. Zod) over scattering `process.env` re
 
 - Parse once at the config boundary; export a typed `config` object
 - Map env → Payload/DB options in small adapters next to that config
-- Secrets and feature flags belong in config, not hardcoded in collections/hooks
+- Keep secrets and feature flags in config (collections/hooks read from that typed config)
 
 Alias pattern (optional): `@config` → validated config; `@payload-config` → `buildConfig` file.
 
-Build-time vs runtime: Next/`payload` builds may need placeholders for secrets that only exist at runtime — document that in the host config README, not by reading raw env in feature code.
+Build-time vs runtime: Next/`payload` builds may need placeholders for secrets that only exist at runtime — document that in the host config README and keep feature code on the typed config boundary.
 
 ## Generated TypeScript types
 
@@ -33,7 +33,7 @@ Upstream docs often use `payload-types.ts` at the project root.
 **Preferred host convention:**
 
 - Emit types to a stable path such as `src/types.ts` via `typescript.outputFile` in `buildConfig`
-- Import as `@/types` (or the host’s alias) — **not** `@/payload-types`
+- Import as `@/types` (or the host’s alias)
 - **Do not** barrel-export generated types from a feature `index.ts`
 - After schema changes: regenerate types (`payload generate:types` / host script) and keep the file committed if other packages depend on it
 

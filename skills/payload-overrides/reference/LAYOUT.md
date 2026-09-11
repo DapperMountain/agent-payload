@@ -48,7 +48,7 @@ export default Users
 
 ## Shared access module
 
-Keep reusable access helpers in `src/access/` with clear barrels. Live collection configs wire **`./access`**, not a single central “all collections” map file.
+Keep reusable access helpers in `src/access/` with clear barrels. Live collection configs wire **`./access`** (keep maps colocated with the collections that use them).
 
 ## Barrel exports
 

@@ -26,7 +26,7 @@ Follow Payload’s own split — do **not** invent a parallel copy system.
 
 Prefer server resolution when the string is rendered in an RSC (or when pairing with a CMS `locale` query). Do not invent per-page `build*Copy` maps that re-list every key.
 
-When a shared UI package cannot import `@payloadcms/ui`, pass **`t`** (or the whole `i18n`) as a prop — not a bespoke `copy` object of every string.
+When a shared UI package cannot import `@payloadcms/ui`, pass **`t`** (or the whole `i18n`) as a prop.
 
 ## Database content (localization)
 

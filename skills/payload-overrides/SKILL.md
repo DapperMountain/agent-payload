@@ -11,7 +11,7 @@ description: >-
 
 Read this skill **before** the vendored [payload skill](../payload/SKILL.md) when they disagree. Upstream examples often assume `pnpm`, `src/payload.config.ts`, flat `collections/Posts.ts`, and `payload-types.ts`.
 
-Product-specific skills (multi-tenant product models, branded i18n packages, hard DB policy) belong in the **host app** skill — not here. When both exist, the host product skill wins over this package for product facts; this package wins over the vendored Payload skill for shared host conventions.
+Product-specific skills (multi-tenant product models, branded i18n packages, hard DB policy) belong in the **host app** skill. When both exist, the host product skill wins over this package for product facts; this package wins over the vendored Payload skill for shared host conventions.
 
 ## Reading order
 
